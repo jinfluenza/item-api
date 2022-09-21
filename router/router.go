@@ -34,8 +34,7 @@ func GetItemByTitleRouter(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Errorf("Failed reason: %s", err)
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w)
+		w.WriteHeader(http.StatusBadRequest)
 	} else {
 		w = addSuccessHeaders(w)
 		json.NewEncoder(w).Encode(it)
@@ -59,8 +58,8 @@ func CreateItemRouter(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Errorf("Error while processing the data: %s", err)
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w)
+		w.WriteHeader(http.StatusBadRequest)
+		// json.NewEncoder(w)
 	} else {
 		w = addSuccessHeaders(w)
 		json.NewEncoder(w).Encode(finalItem)
@@ -84,8 +83,7 @@ func UpdateItemRouter(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Errorf("Error while processing the data: %s", err)
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w)
+		w.WriteHeader(http.StatusBadRequest)
 	} else {
 		w = addSuccessHeaders(w)
 		json.NewEncoder(w).Encode(finalItem)
@@ -109,8 +107,7 @@ func DeleteItemRouter(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Errorf("Error while processing the data: %s", err)
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w)
+		w.WriteHeader(http.StatusBadRequest)
 	} else {
 		w = addSuccessHeaders(w)
 		json.NewEncoder(w).Encode("Item was deleted")
