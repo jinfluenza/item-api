@@ -19,17 +19,15 @@ func GetItemByTitle(title string) (model.Item, error) {
 		}
 	}
 	if item.Title == "" {
-		log.Fatal("Item not found :(")
 		return item, fmt.Errorf("Item not found :(")
 	}
-	log.Info("Title %s was found", title)
+	log.Infof("%s was found", title)
 	return item, nil
 }
 
 // METHOD:GETALL
 func GetItems() []model.Item {
-	item := model.Item{Title: "hello", Body: "Bye"}
-	fancy_pants_db = append(fancy_pants_db, item)
+	log.Debugf("These are items in the db: %s", fancy_pants_db)
 	return fancy_pants_db
 }
 
@@ -37,6 +35,12 @@ func GetItems() []model.Item {
 func CreateItems(i model.Item) (model.Item, error) {
 	if i.Title == "" || i.Body == "" {
 		return i, fmt.Errorf("Please send correct data!")
+	}
+
+	for _, v := range fancy_pants_db {
+		if v.Title == i.Title {
+			return model.Item{}, fmt.Errorf("There are exisiting title in the db")
+		}
 	}
 	fancy_pants_db = append(fancy_pants_db, i)
 	return i, nil
@@ -54,10 +58,9 @@ func UpdateItem(title string, ei model.Item) (model.Item, error) {
 	}
 
 	if editedItem.Title == "" {
-		log.Fatal("Item not found")
 		return editedItem, fmt.Errorf("Item was not found in the db!")
 	} else {
-		log.Info("%s was found in the db and updated!", title)
+		log.Infof("%s was found in the db and updated!", title)
 	}
 
 	return editedItem, nil

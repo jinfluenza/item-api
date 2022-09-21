@@ -1,6 +1,6 @@
 package model
 
 type Item struct {
-	Title string
-	Body  string
+	Title string `json:"title"`
+	Body  string `json:"body"`
 }

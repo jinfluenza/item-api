@@ -1,14 +1,14 @@
 # First Stage
 ARG GO_VERSION="1.19.1"
-FROM alpine:${GO_VERSION}-buster AS build
-
-LABEL maintainer="jinfluenza"
+FROM golang:${GO_VERSION}-buster AS build
 
 WORKDIR /app
 
-COPY * ./
-
+COPY go.mod ./
+COPY go.sum ./
 RUN go mod download
+
+COPY . .
 
 RUN go build -o ./item-app
 
@@ -16,6 +16,8 @@ RUN go build -o ./item-app
 FROM gcr.io/distroless/base-debian10
 
 WORKDIR /
+
+LABEL maintainer="jinfluenza"
 
 COPY --from=build /app/item-app /item-app
 

@@ -14,6 +14,10 @@ import (
 func requestHandlers() {
 	r := mux.NewRouter()
 	r.HandleFunc("/items", router.GetItemsRouter).Methods("GET")
+	r.HandleFunc("/item", router.GetItemByTitleRouter).Methods("GET")
+	r.HandleFunc("/item", router.CreateItemRouter).Methods("POST")
+	r.HandleFunc("/item", router.UpdateItemRouter).Methods("PUT")
+	r.HandleFunc("/item", router.DeleteItemRouter).Methods("DELETE")
 
 	r.Use(cors.New(
 		cors.Options{

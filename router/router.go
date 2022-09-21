@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/jinfluenza/item-api/handlers"
+	model "github.com/jinfluenza/item-api/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -23,35 +24,97 @@ func GetItemsRouter(w http.ResponseWriter, r *http.Request) {
 func GetItemByTitleRouter(w http.ResponseWriter, r *http.Request) {
 	log.Info("Attempting to get specific item by its title")
 
-	var title string
-	
-	rb, err := ioutil.ReadAll(r.Body)
+	title := r.URL.Query().Get("title")
 
-	if err != nil {
-		log.Fatalf("Data was null, and failed due to this reason: %s", err)
+	if title == "" {
+		log.Errorf("Data was null, and failed due to this reason: title param query was not found")
 	}
-
-	json.Unmarshal(rb, &title)
 
 	it, err := handlers.GetItemByTitle(title)
 
 	if err != nil {
 		log.Errorf("Failed reason: %s", err)
-		w = addFailedHeaders(w)
-		json.NewEncoder(w).Encode(it)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w)
 	} else {
 		w = addSuccessHeaders(w)
 		json.NewEncoder(w).Encode(it)
 	}
-
-	
-	
-
 }
 
-func addFailedHeaders(w http.ResponseWriter) http.ResponseWriter {
-	w.WriteHeader(http.StatusNotFound)
-	return w
+func CreateItemRouter(w http.ResponseWriter, r *http.Request) {
+	log.Info("Creating item now")
+
+	var item model.Item
+
+	rb, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		log.Errorf("Error due to following reason: %s", err)
+	}
+
+	json.Unmarshal(rb, &item)
+
+	finalItem, err := handlers.CreateItems(item)
+
+	if err != nil {
+		log.Errorf("Error while processing the data: %s", err)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w)
+	} else {
+		w = addSuccessHeaders(w)
+		json.NewEncoder(w).Encode(finalItem)
+	}
+}
+
+func UpdateItemRouter(w http.ResponseWriter, r *http.Request) {
+	log.Info("Updating the item!")
+
+	var item model.Item
+
+	rb, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		log.Errorf("Error due to following reason: %s", err)
+	}
+
+	json.Unmarshal(rb, &item)
+
+	finalItem, err := handlers.UpdateItem(item.Title, item)
+
+	if err != nil {
+		log.Errorf("Error while processing the data: %s", err)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w)
+	} else {
+		w = addSuccessHeaders(w)
+		json.NewEncoder(w).Encode(finalItem)
+	}
+}
+
+func DeleteItemRouter(w http.ResponseWriter, r *http.Request) {
+	log.Info("Deleting the item!")
+
+	var item model.Item
+
+	rb, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		log.Errorf("Error due to following reason: %s", err)
+	}
+
+	json.Unmarshal(rb, &item)
+
+	_, err = handlers.DeleteItem(item)
+
+	if err != nil {
+		log.Errorf("Error while processing the data: %s", err)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w)
+	} else {
+		w = addSuccessHeaders(w)
+		json.NewEncoder(w).Encode("Item was deleted")
+	}
 }
 
 func addSuccessHeaders(w http.ResponseWriter) http.ResponseWriter {
